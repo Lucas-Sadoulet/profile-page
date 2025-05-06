@@ -1,73 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucas Sadoulet</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 </head>
+
 <body>
-    <style>
-        my-component {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            background-color: #f9f9f9;
-            overflow: hidden;
-        }
 
-    </style>
-    <header>
-        <div class="container">
-            <h1>Lucas Sadoulet</h1>
-        </div>
-    </header>
+    <div data-include="header.html" ></div> 
 
-    <div class="text-blurb" style=" top: 10%; left: 20%;">
-        <p>This writing sample is a research essay about nuclear weapons proliferation, outlining not only my experience in accademic research but also my diverse interest outside of strickly engineering feilds.</p>
+
+    <div class="text-blurb" style=" top: 15%; left: 20%;">
+        <p>This technical description...</p>
     </div>
 
-    <iframe src="Libyan Nuclear Counterproliferation Sadoulet.pdf#toolbar=0&navpanes=0&scrollbar=0" style="z-index: 10;" title="Resume"></iframe>
+    <a href="projects/Libyan Nuclear Counterproliferation Sadoulet.pdf" download="Lucas_Sadoulet_Nuclear_Proliferation.pdf"
+        class='download'
+        style="text-decoration: none; color: white; padding: 10px 20px; border-radius: 5px; font-size: 16px; right: 5%; position: absolute; top: 15%;">Download
+        PDF</a>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const iframe = document.querySelector('iframe');
-            iframe.onload = () => {
-                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                iframeDocument.body.style.zoom = '200%';
-                iframeDocument.body.style.width = '100%';
-            };
-        });
-    </script>
-    <my-component style="z-index: 0;"></my-component>
+
+    <div id="pdf-container" class="pdf_viewer"></div>
+
 
     <script>
-        class MyComponent extends HTMLElement {
-            constructor() {
-                super();
-                const shadow = this.attachShadow({ mode: 'open' });
+        const url = 'projects/Libyan Nuclear Counterproliferation Sadoulet.pdf'; // Path to your PDF
 
-                const style = document.createElement('style');
-                style.textContent = `
-                    .wrapper {
-                        width: 100%;
-                        height: 100%;
-                        position: relative;
-                        overflow: hidden;
-                        background-color: black;
-                    }
-                `;
+    const container = document.getElementById('pdf-container');
 
-                const wrapper = document.createElement('div');
-                wrapper.classList.add('wrapper');
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+      const numPages = pdf.numPages;
 
-                shadow.appendChild(style);
-                shadow.appendChild(wrapper);
-            }
-        }
+      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+  const containerWidth = window.innerWidth * 0.5; // 60% of screen width
+  const unscaledViewport = page.getViewport({ scale: 1 });
+  const scale = containerWidth / unscaledViewport.width;
+  const viewport = page.getViewport({ scale });
 
-        customElements.define('my-component', MyComponent);
-    </script>
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  container.appendChild(canvas);
+
+  page.render({
+    canvasContext: ctx,
+    viewport: viewport
+  });
+});
+
+      }
+    });
+  </script>
+
+
+
+
 </body>
+
 </html>
