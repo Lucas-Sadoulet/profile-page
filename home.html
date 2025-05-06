@@ -37,7 +37,24 @@
             z-index: 10;
             border-radius: 5%; /* Rounds the corners to make it circular */
         }
+        .contact-list {
+            position: fixed;
+            top: 20vw;
+            left: 30vw;
+            width: 50vw;
+            height: 15vw;
+            z-index: 999;
+            display: grid;
+            justify-content: flex-start;
         
+        }
+        .contact-list button {
+                justify-self: left; /* Scale up the text size */
+            }
+            .contact-list button img {
+                width: 4vw; /* Scale up the image size */
+                vertical-align: left;
+            }
 	</style>
     <script src="scripts.js"></script>
     <div data-include="header.html"></div>
@@ -45,9 +62,25 @@
 <div class="text-blurb">
     <p>Hello! I'm <b>Lucas Sadoulet</b>, a backend developer and data scientist. I enjoy building interactive web tools, applicable databases, and studying ethics of AI integration. Feel free to explore my <a href="projects.html" style ="color:#cdcddb">projects</a> and get in touch!</p>
 </div>
-<img src="images/lucas-sadoulet.png" alt="Image of Luca" class="profile_image">
+<!-- <my-component></my-component> -->
 
-<my-component></my-component>
+
+<div class="contact-list">
+    
+        <button href="https://www.linkedin.com/in/lucassadoulet" target="_blank" style="color:#cdcddb; z-index: 999; background: none; border: none; cursor: pointer; font-size: 1.5em;">
+          <img src="images/icons8-linkedin-50.png" alt="LinkedIn Icon" style="width:20px; vertical-align:middle;"> LinkedIn
+        </button>        
+        <button href="https://github.com/lucas-sadoulet" target="_blank" style="color:#cdcddb; z-index: 999; background: none; border: none; cursor: pointer; font-size: 1.5em;">
+          <img src="images/icons8-github-64.png" alt="GitHub Icon" style="width:20px; vertical-align:middle;"> GitHub
+        <button href="mailto:llsadoulet@gmail.com" style="color:#cdcddb; z-index: 999; background: none; border: none; cursor: pointer; font-size: 1.5em;">
+          <img src="images/icons8-email-64.png" alt="Mail Icon" style="width:20px; vertical-align:middle;"> Gmail
+    
+  </div>
+
+  
+<img src="images/lucas-sadoulet.png" alt="Image of Lucas" class="profile_image">
+
+
 
 <script>
     class MyComponent extends HTMLElement {

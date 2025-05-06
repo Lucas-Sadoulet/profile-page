@@ -31,20 +31,19 @@
     
     
 </style>
-<header style="z-index: 200; position: fixed; top: 0; height: 6vh; width: 100vw">
+<header style="z-index: 200; position: fixed; top: 0; left:0; height: 6vh; width: 100vw">
     <div class="container">
-        <h1 onclick="openTab('home')">Lucas Sadoulet</h1>
+        <h1 onclick="openTab('home')" style ="top:1vh; font-size: 3vh; font-weight: bolder">Lucas Sadoulet</h1>
         <!-- <p class="subtitle">[subtitle]</p> -->
     </div>
 
-    
     <div class="tabs" style="right: 0%; top: 0%; position: fixed; height: 6vh">
     
-        <div class="tab" onclick="openTab('home')">Home</div>
-        <div class="tab" onclick="openTab('about')">About Me</div>
-        <div class="tab" onclick="openTab('resume')">Resume</div>
+        <button class="tab" onclick="openTab('home')">Home</button>
+        <button class="tab" onclick="openTab('about')">About Me</button>
+        <button class="tab" onclick="openTab('resume')">Resume</button>
         <div class="tab-dropdown">
-            <div class="tab" onclick="openTab('projects')">Projects</div>
+            <button class="tab" onclick="openTab('projects')">Projects</button>
             <div class="dropdown-content"> 
                 <a href="project_a.html">Technical Description: LLM</a>
                 <a href="project_b.html">Instruction Set: Bike Chain Maintenance</a>
