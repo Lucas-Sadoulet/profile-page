@@ -43,23 +43,188 @@
     <div data-include="header.html"></div>
 
 <div class="text-blurb">
-    <p>Hello! I'm <b>Lucas Sadoulet</b>, a backend developer and data scientist. I enjoy building interactive web tools, applying databases, and studying the ethics of AI integration. Feel free to explore my <a href="projects.html" style ="color:#cdcddb">projects</a> and get in touch!</p>
+    <p>Hello! I'm <b>Lucas Sadoulet</b>, a backend developer and data scientist. I enjoy building interactive web tools, applicable databases, and studying ethics of AI integration. Feel free to explore my <a href="projects.html" style ="color:#cdcddb">projects</a> and get in touch!</p>
 </div>
 <img src="images/lucas-sadoulet.png" alt="Image of Luca" class="profile_image">
 
 <my-component></my-component>
+
 <script>
-    function includeHTML() {
-        const elements = document.querySelectorAll('[data-include]');
-        elements.forEach(async (el) => {
-            const file = el.getAttribute('data-include');
-            const response = await fetch(file);
-            if (response.ok) {
-                el.innerHTML = await response.text();
+    class MyComponent extends HTMLElement {
+        constructor() {
+            super();
+            const shadow = this.attachShadow({ mode: 'open' });
+
+            const style = document.createElement('style');
+            style.textContent = `
+                .wrapper {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    overflow: hidden;
+                    background-color: black;
+                }
+                .point {
+                    width: 3px;
+                    height: 3px;
+                    background-color: white;
+                    position: absolute;
+                    border-radius: 50%;
+                    transition: transform 5s linear;
+                    filter: blur(.5px);
+                }
+                .mouse-point {
+                    width: 0px;
+                    height: 0px;
+                    background-color: red;
+                    position: absolute;
+                    border-radius: 50%;
+                    pointer-events: none;
+                }
+            `;
+
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('wrapper');
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            wrapper.appendChild(canvas);
+
+            const mousePoint = document.createElement('div');
+            mousePoint.classList.add('mouse-point');
+            wrapper.appendChild(mousePoint);
+
+            const points = [];
+            let running = true;
+
+            shadow.appendChild(style);
+            shadow.appendChild(wrapper);
+            function generatePoint() {
+                if (!running) return; 
+                const point = document.createElement('div');
+                point.classList.add('point');
+                const x = Math.random() * 100;
+                const y = 100; // Start at the bottom of the screen
+                point.style.left = `${x}%`;
+                point.style.top = `${y}%`;
+
+                const speed = getRandomSpeed();
+                const hue = Math.random() * (250 - 150) + 100; // Random hue between 150 and 250
+                const randomColor = `rgb(${hue},${hue},205)`;
+                point.style.backgroundColor = randomColor;
+
+                wrapper.appendChild(point);
+                points.push({ element: point, x: x, y: y, speed: speed, control: false });
             }
-        });
+
+            setInterval(generatePoint, 600);
+
+            function getRandomSpeed() {
+                return Math.random() * 0.1 + 0.05;
+            }
+            function animatePoints() {
+                // Filter out points that are out of bounds
+                points.forEach((point, index) => {
+                    point.y -= point.speed;
+                    if (point.y < -50) {
+                        // Remove the point from the DOM and the points array
+                        point.element.remove();
+                        points.splice(index, 1);
+                    } else {
+                        point.element.style.top = `${point.y}% `;
+                    }
+                });
+
+                drawLines();
+                requestAnimationFrame(animatePoints);
+            }
+
+            function drawLines() {
+                canvas.width = wrapper.clientWidth;
+                canvas.height = wrapper.clientHeight;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const allPoints = [...points, { x: parseFloat(mousePoint.style.left), y: parseFloat(mousePoint.style.top), control: true }];
+
+                allPoints.forEach((p1, i) => {
+                    allPoints.forEach((p2, j) => {
+
+                        if (i > j) {
+
+                            const x1 = (p1.x / 100) * canvas.width;
+                            const y1 = (p1.y / 100) * canvas.height;
+                            const x2 = (p2.x / 100) * canvas.width;
+                            const y2 = (p2.y / 100) * canvas.height;
+                            const distance = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+
+                            //const v = Math.min(150, (200000 / distance) - 5);
+                            //const v = Math.sqrt(Math.max(20000 - distance, 0)) - 20
+                            if (distance < 70000)
+                            {
+                                var v;
+                                if (p1.control || p2.control) {
+                                    v = Math.min(250 - distance * .005, 25);
+                                    //v = Math.min(Math.sqrt(Math.max(4000 - distance, 0)) - 20, 75);
+                                }
+                                else {
+                                    v = Math.min(150 - distance * .015, 25);
+                                }
+                                if (v > 1) {
+
+
+                                    ctx.strokeStyle = `rgba(255,255,255,${v/100})`;
+                                    ctx.lineWidth = .5 - (v / 255);
+                                    ctx.lineWidth = 1
+
+                                    ctx.shadowBlur = 1; // Adjust the blur intensity
+                                
+                                    ctx.beginPath();
+                                    var r = 1.5;
+                                    if (p1.element) {
+                                        ctx.moveTo(x1 + r, y1 + r);
+                                        ctx.lineTo(x2 + r, y2 + r);
+                                    }
+                                    else if (p2.element) {
+                                        ctx.moveTo(x1 + r, y1 + r);
+                                        ctx.lineTo(x2 + r, y2 + r);
+                                    }
+                                    else {
+                                        var r = 0;
+                                    }
+                                    ctx.moveTo(x1 + r, y1 + r);
+                                    ctx.lineTo(x2 + r, y2 + r);
+                                    ctx.stroke();
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+
+            wrapper.addEventListener('mousemove', (event) => {
+                const rect = wrapper.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) * 100 ;
+                const y = ((event.clientY - rect.top) / rect.height) * 100 ;
+                mousePoint.style.left = `${x}% `;
+                mousePoint.style.top = `${y}%`;
+                drawLines();
+            });
+
+            window.addEventListener('focus', () => {
+                if (!running) {
+                    running = true;
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                running = false;
+            });
+            animatePoints()
+        }
     }
-    includeHTML();
+
+    customElements.define('my-component', MyComponent);
 </script>
 </body>
 </html>
